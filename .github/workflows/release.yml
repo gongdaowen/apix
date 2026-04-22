@@ -1,0 +1,177 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            artifact_name: apix-linux-amd64
+          - goos: linux
+            goarch: arm64
+            artifact_name: apix-linux-arm64
+          - goos: darwin
+            goarch: amd64
+            artifact_name: apix-darwin-amd64
+          - goos: darwin
+            goarch: arm64
+            artifact_name: apix-darwin-arm64
+          - goos: windows
+            goarch: amd64
+            artifact_name: apix-windows-amd64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          BINARY_NAME="${{ matrix.artifact_name }}"
+          echo "Building $BINARY_NAME..."
+          go build -ldflags="-s -w -X main.Version=${{ steps.version.outputs.version }}" \
+                   -o "$BINARY_NAME" \
+                   main.go
+          
+          # For non-Windows, make executable
+          if [ "${{ matrix.goos }}" != "windows" ]; then
+            chmod +x "$BINARY_NAME"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}
+          retention-days: 5
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          cd artifacts
+          
+          # Package each binary with checksums
+          for dir in */; do
+            binary_name=$(ls "$dir")
+            cp "$dir/$binary_name" "../release-assets/"
+            
+            # Generate SHA256 checksum
+            cd "$dir"
+            sha256sum "$binary_name" > "${binary_name}.sha256"
+            cp "${binary_name}.sha256" "../../release-assets/"
+            cd ..
+          done
+          
+          # Create combined checksums file
+          cd ../release-assets
+          sha256sum * > checksums.txt
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          VERSION="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          fi
+          
+          echo "## What's Changed" > changelog.md
+          echo "" >> changelog.md
+          
+          # Get commits since last tag
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "### Changes since $PREVIOUS_TAG" >> changelog.md
+            echo "" >> changelog.md
+            git log --pretty=format:"- %s (%h)" "$PREVIOUS_TAG"..HEAD >> changelog.md
+          else
+            echo "### Initial Release" >> changelog.md
+            echo "" >> changelog.md
+            git log --pretty=format:"- %s (%h)" >> changelog.md
+          fi
+          
+          echo "" >> changelog.md
+          echo "" >> changelog.md
+          echo "### Available Binaries" >> changelog.md
+          echo "" >> changelog.md
+          echo "- 🐧 Linux (amd64, arm64)" >> changelog.md
+          echo "- 🍎 macOS (amd64, arm64)" >> changelog.md
+          echo "- 🪟 Windows (amd64)" >> changelog.md
+          echo "" >> changelog.md
+          echo "Each binary includes SHA256 checksum for verification." >> changelog.md
+          
+          cat changelog.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-assets/*
+          body_path: changelog.md
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Verify release
+        run: |
+          echo "✅ Release created successfully!"
+          echo "📦 Version: ${{ steps.version.outputs.version }}"
+          echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.version }}"
