@@ -3,8 +3,12 @@ setlocal enabledelayedexpansion
 
 :: Variables
 set BINARY_NAME=apix
-for /f "delims=" %%i in ('git describe --tags --always --dirty 2^>nul') do set VERSION=%%i
+:: Get version: use tag if exists, otherwise use "dev"
+for /f "delims=" %%i in ('git describe --tags --exact-match 2^>nul') do set VERSION=%%i
 if "%VERSION%"=="" set VERSION=dev
+:: Get commit hash
+for /f "delims=" %%i in ('git rev-parse --short HEAD 2^>nul') do set COMMIT_HASH=%%i
+if "%COMMIT_HASH%"=="" set COMMIT_HASH=unknown
 
 echo.
 echo Apix Build Script for Windows

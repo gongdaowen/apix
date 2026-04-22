@@ -1,4 +1,4 @@
-module github.com/apix-cli/apix
+module github.com/gongdaowen/apix
 
 go 1.25.0
 
@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/fatih/color v1.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

@@ -53,11 +53,16 @@ jobs:
       - name: Determine version
         id: version
         run: |
+          # Use tag if exists, otherwise use "dev"
+          VERSION=$(git describe --tags --exact-match 2>/dev/null || echo "dev")
+          
+          # If manually triggered, override with input version
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
-          else
-            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            VERSION="${{ inputs.version }}"
           fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Using version: $VERSION"
 
       - name: Build binary
         env:

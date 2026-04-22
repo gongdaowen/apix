@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/apix-cli/apix/internal/models"
+	"github.com/gongdaowen/apix/internal/models"
 )
 
 // RequestBuilder constructs an HTTP request from a resolved request.

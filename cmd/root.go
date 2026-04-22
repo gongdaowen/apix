@@ -6,13 +6,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/apix-cli/apix/internal/builder"
-	"github.com/apix-cli/apix/internal/executor"
-	"github.com/apix-cli/apix/internal/formatter"
-	"github.com/apix-cli/apix/internal/i18n"
-	"github.com/apix-cli/apix/internal/models"
-	"github.com/apix-cli/apix/internal/parser"
-	"github.com/apix-cli/apix/internal/resolver"
+	"github.com/gongdaowen/apix/internal/builder"
+	"github.com/gongdaowen/apix/internal/executor"
+	"github.com/gongdaowen/apix/internal/formatter"
+	"github.com/gongdaowen/apix/internal/i18n"
+	"github.com/gongdaowen/apix/internal/models"
+	"github.com/gongdaowen/apix/internal/parser"
+	"github.com/gongdaowen/apix/internal/resolver"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
 )
@@ -47,6 +47,7 @@ var rootCmd = &cobra.Command{
 	Short:   "", // Will be set in init() based on language
 	Long:    "", // Will be set in init() based on language
 	Example: "", // Will be set in init() based on language
+	Version: "", // Will be set via SetVersion
 	Run: func(cmd *cobra.Command, args []string) {
 		// If no subcommand is provided, show help
 		// Update help text with server info if spec is loaded
@@ -572,4 +573,10 @@ func Execute() error {
 // SetVersion sets the version string (called from main)
 func SetVersion(v string) {
 	version = v
+	rootCmd.Version = version
+}
+
+// SetBuildInfo sets build time and commit hash (called from main)
+func SetBuildInfo(buildTime, commitHash string) {
+	// These can be used for extended version info if needed
 }

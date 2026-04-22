@@ -59,8 +59,8 @@ checksums.txt                 # 所有文件的综合校验和
 
 ```bash
 # 下载二进制文件和对应的 sha256 文件
-wget https://github.com/your-repo/apix/releases/download/v1.0.0/apix-linux-amd64
-wget https://github.com/your-repo/apix/releases/download/v1.0.0/apix-linux-amd64.sha256
+wget https://github.com/gongdaowen/apix/releases/download/v1.0.0/apix-linux-amd64
+wget https://github.com/gongdaowen/apix/releases/download/v1.0.0/apix-linux-amd64.sha256
 
 # 验证校验和
 sha256sum -c apix-linux-amd64.sha256

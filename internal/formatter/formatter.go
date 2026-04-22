@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/apix-cli/apix/internal/executor"
+	"github.com/gongdaowen/apix/internal/executor"
 	"github.com/tidwall/pretty"
 )
 

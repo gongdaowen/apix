@@ -81,11 +81,16 @@ jobs:
           CGO_ENABLED: 0
         shell: bash
         run: |
+          # Get version (use tag if exists, otherwise "dev")
+          VERSION=$(git describe --tags --exact-match 2>/dev/null || echo "dev")
+          
           echo "Building for ${{ matrix.goos }}/${{ matrix.goarch }}..."
+          echo "Version: $VERSION"
+          
           if [ "${{ matrix.goos }}" = "windows" ]; then
-            go build -v -ldflags="-s -w" -o apix-test.exe main.go
+            go build -v -ldflags="-s -w -X main.Version=$VERSION" -o apix-test.exe main.go
           else
-            go build -v -ldflags="-s -w" -o apix-test main.go
+            go build -v -ldflags="-s -w -X main.Version=$VERSION" -o apix-test main.go
           fi
 
       - name: Test binary execution (Unix)

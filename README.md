@@ -23,7 +23,7 @@
 
 ### 从 Release 页面下载（推荐）
 
-访问 [Releases](https://github.com/apix-cli/apix/releases) 页面，下载适合您平台的二进制文件：
+访问 [Releases](https://github.com/gongdaowen/apix/releases) 页面，下载适合您平台的二进制文件：
 
 - 🐧 **Linux**: `apix-linux-amd64` 或 `apix-linux-arm64`
 - 🍎 **macOS**: `apix-darwin-amd64` (Intel) 或 `apix-darwin-arm64` (Apple Silicon)
@@ -32,7 +32,7 @@
 **验证下载的文件：**
 ```bash
 # 下载校验和文件
-wget https://github.com/apix-cli/apix/releases/latest/download/checksums.txt
+wget https://github.com/gongdaowen/apix/releases/latest/download/checksums.txt
 
 # 验证文件完整性
 sha256sum -c checksums.txt --ignore-missing
@@ -46,7 +46,7 @@ sha256sum -c checksums.txt --ignore-missing
 
 **使用 Makefile（Linux/macOS）：**
 ```bash
-git clone https://github.com/apix-cli/apix.git
+git clone https://github.com/gongdaowen/apix.git
 cd apix
 make build        # 构建当前平台
 make build-all    # 构建所有平台
@@ -55,7 +55,7 @@ make install      # 安装到 GOPATH/bin
 
 **使用构建脚本（Windows）：**
 ```powershell
-git clone https://github.com/apix-cli/apix.git
+git clone https://github.com/gongdaowen/apix.git
 cd apix
 .\build.bat build    # 构建
 .\build.bat dev      # 构建并运行
@@ -63,7 +63,7 @@ cd apix
 
 **手动构建：**
 ```bash
-git clone https://github.com/apix-cli/apix.git
+git clone https://github.com/gongdaowen/apix.git
 cd apix
 go build -o apix main.go
 ```
@@ -71,7 +71,7 @@ go build -o apix main.go
 ### 使用 Go install
 
 ```bash
-go install github.com/apix-cli/apix@latest
+go install github.com/gongdaowen/apix@latest
 ```
 
 ## 🚀 快速开始
@@ -651,7 +651,7 @@ apix yourOperation --requiredParam value
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/apix.git
+git clone https://github.com/gongdaowen/apix.git
 cd apix
 
 # 安装依赖

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/apix-cli/apix/internal/models"
+	"github.com/gongdaowen/apix/internal/models"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 

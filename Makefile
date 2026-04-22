@@ -2,9 +2,11 @@
 
 # Variables
 BINARY_NAME=apix
-VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+# Get version: use tag if exists, otherwise use "dev" with commit info
+VERSION=$(shell git describe --tags --exact-match 2>/dev/null || echo "dev")
 BUILD_TIME=$(shell date -u '+%Y-%m-%d %H:%M:%S')
-LDFLAGS=-ldflags="-s -w -X main.Version=${VERSION} -X 'main.BuildTime=${BUILD_TIME}'"
+COMMIT_HASH=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+LDFLAGS=-ldflags="-s -w -X main.Version=${VERSION} -X 'main.BuildTime=${BUILD_TIME}' -X 'main.CommitHash=${COMMIT_HASH}'"
 
 # Default target
 help: ## Show this help message

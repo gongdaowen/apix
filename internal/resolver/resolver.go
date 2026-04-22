@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/apix-cli/apix/internal/models"
-	"github.com/apix-cli/apix/internal/parser"
+	"github.com/gongdaowen/apix/internal/models"
+	"github.com/gongdaowen/apix/internal/parser"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
