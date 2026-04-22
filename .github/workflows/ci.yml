@@ -81,7 +81,11 @@ jobs:
           CGO_ENABLED: 0
         run: |
           echo "Building for ${{ matrix.goos }}/${{ matrix.goarch }}..."
-          go build -v -ldflags="-s -w" -o apix-test main.go
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            go build -v -ldflags="-s -w" -o apix-test.exe main.go
+          else
+            go build -v -ldflags="-s -w" -o apix-test main.go
+          fi
 
       - name: Test binary execution (Unix)
         if: runner.os != 'Windows'
@@ -100,6 +104,7 @@ jobs:
           name: apix-${{ matrix.goos }}-${{ matrix.goarch }}
           path: apix-test${{ matrix.goos == 'windows' && '.exe' || '' }}
           retention-days: 1
+          if-no-files-found: error
 
   lint:
     name: Lint
