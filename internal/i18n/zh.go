@@ -29,8 +29,9 @@ func loadChineseMessages() map[string]string {
 		"flag.base_url": "覆盖服务器URL（优先级高于文档中定义的servers）",
 		"flag.server": "选择服务器索引（当有多个servers时），默认为0（第一个服务器）",
 		"flag.lang": "设置语言偏好（en/zh）。未指定时自动检测",
-		"flag.raw": "仅输出响应体，不包含头信息或状态",
-		"flag.json": "以JSON格式输出完整响应，包括状态、头和体",
+		"flag.full": "显示完整响应，包括状态、头和响应体",
+		"flag.raw": "以美化JSON格式输出响应体",
+		"flag.json": "以JSON格式输出响应体（与--full组合输出完整响应的JSON）",
 		"flag.debug": "显示调试信息，包括请求URL和方法",
 		
 		// Flags - Operation

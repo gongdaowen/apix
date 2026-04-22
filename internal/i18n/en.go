@@ -30,8 +30,9 @@ and flexible parameter input.`,
 		"flag.base_url": "Override server URL (takes precedence over servers defined in the spec)",
 		"flag.server":  "Select server index (when multiple servers are defined), default is 0 (first server)",
 		"flag.lang":    "Set language preference (en/zh). Auto-detects if not specified",
-		"flag.raw":     "Output only response body without headers or status",
-		"flag.json":    "Output full response as JSON including status, headers, and body",
+		"flag.full":    "Show full response including status, headers, and body",
+		"flag.raw":     "Output response body as pretty-printed JSON",
+		"flag.json":    "Output response body as JSON (combine with --full for complete response JSON)",
 		"flag.debug":   "Show debug information including request URL and method",
 
 		// Flags - Operation

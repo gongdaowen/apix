@@ -27,6 +27,7 @@ var (
 	serverIndex int
 	baseUrl     string
 	dryRun      bool
+	outputFull  bool
 	outputRaw   bool
 	outputJSON  bool
 	debugMode   bool
@@ -195,11 +196,22 @@ func createOperationRunner(doc *openapi3.T, op *models.APIOperation) func(*cobra
 
 		// Format output based on mode
 		fmtr := formatter.NewFormatter()
-		if outputRaw {
-			fmtr.SetMode(formatter.OutputRaw)
+		
+		// Handle --full --json combination: full response as JSON
+		if outputFull && outputJSON {
+			fmtr.SetMode(formatter.OutputFullJSON)
 		} else if outputJSON {
-			fmtr.SetMode(formatter.OutputJSON)
+			// --json only: body as JSON
+			fmtr.SetMode(formatter.OutputBodyJSON)
+		} else if outputFull {
+			// --full only: complete response with enhanced body
+			fmtr.SetMode(formatter.OutputFull)
+		} else if outputRaw {
+			// --raw only: body as pretty-printed JSON
+			fmtr.SetMode(formatter.OutputRaw)
 		}
+		// Default: enhanced body only (OutputEnhanced)
+		
 		if err := fmtr.Print(resp); err != nil {
 			return fmt.Errorf("failed to format response: %w", err)
 		}
@@ -232,6 +244,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&serverIndex, "server", 0, translator.T("flag.server"))
 
 	// Output format flags - must be PersistentFlags to work on subcommands
+	rootCmd.PersistentFlags().BoolVar(&outputFull, "full", false, translator.T("flag.full"))
 	rootCmd.PersistentFlags().BoolVar(&outputRaw, "raw", false, translator.T("flag.raw"))
 	rootCmd.PersistentFlags().BoolVar(&outputJSON, "json", false, translator.T("flag.json"))
 	rootCmd.PersistentFlags().BoolVar(&debugMode, "debug", false, translator.T("flag.debug"))

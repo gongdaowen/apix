@@ -14,7 +14,7 @@
 - 🌍 **多环境支持** - 通过环境配置文件轻松切换 dev/staging/prod 环境
 - 📝 **完整参数支持** - 支持路径参数、查询参数、请求头、请求体
 - 🔐 **认证集成** - 内置 Bearer Token 和 API Key 认证支持
-- 🎯 **多种输出格式** - 美化打印、原始响应、JSON 格式输出
+- 🎯 **多种输出格式** - 增强格式化、美化 JSON、完整响应 JSON
 - 🔬 **调试模式** - Dry-run 模式预览 curl 命令，Debug 模式查看请求详情
 - 🌐 **国际化支持** - 支持中文和英文界面，自动检测系统语言
 - 🔄 **多服务器支持** - 当 API 有多个服务器时，可灵活选择目标服务器
@@ -193,11 +193,17 @@ apix getUser --id 123 --dry-run
 # 启用调试模式查看详细信息
 apix getUser --id 123 --debug
 
-# 以 JSON 格式输出完整响应（包括状态码和响应头）
+# 以美化 JSON 格式输出响应体
+apix getUser --id 123 --raw
+
+# 仅输出 Body 的 JSON（紧凑格式）
 apix getUser --id 123 --json
 
-# 仅输出响应体（适合脚本处理）
-apix getUser --id 123 --raw
+# 显示完整响应（状态 + 头 + 增强格式的 Body）
+apix getUser --id 123 --full
+
+# 输出完整响应的 JSON（包含 status_code、headers、body）
+apix getUser --id 123 --full --json
 ```
 
 ### 场景 5：CI/CD 自动化
@@ -345,6 +351,142 @@ done
 
 ## 📋 命令行参数
 
+### 输出格式详解
+
+Apix 提供了灵活的输出格式选项，可以根据不同场景选择最合适的显示方式：
+
+#### **默认模式（增强格式化）**
+
+```bash
+apix getPost --id 1
+```
+
+**输出：**
+```
+UserId: 1
+Id: 1
+Title: sunt aut facere repellat provident occaecati excepturi optio reprehenderit
+Body: quia et suscipit...
+```
+
+- ✅ 对象按属性展示，字段名自动转换为 Title Case
+- ✅ 数组以表格形式展示（当元素是对象时）
+- ✅ 支持嵌套结构
+- ✅ 适合人类阅读
+
+#### **`--full`（完整响应 + 增强 Body）**
+
+```bash
+apix getPost --id 1 --full
+```
+
+**输出：**
+```
+200 200 OK
+Duration: 688ms
+
+─── Response Headers ───
+  Content-Type: application/json; charset=utf-8
+  Server: cloudflare
+  ...
+
+─── Response Body ───
+UserId: 1
+Id: 1
+Title: sunt aut facere...
+```
+
+- ✅ 显示状态码和响应时间
+- ✅ 显示所有响应头
+- ✅ Body 使用增强格式化
+
+#### **`--raw`（美化 JSON Body）**
+
+```bash
+apix getPost --id 1 --raw
+```
+
+**输出：**
+```json
+{
+  "userId": 1,
+  "id": 1,
+  "title": "sunt aut facere...",
+  "body": "quia et suscipit..."
+}
+```
+
+- ✅ 标准的美化 JSON 格式
+- ✅ 适合与 `jq` 等工具配合使用
+- ✅ 之前的默认行为
+
+#### **`--full --raw`（完整响应 + 美化 JSON）**
+
+```bash
+apix getPost --id 1 --full --raw
+```
+
+**输出：**
+```
+200 200 OK
+Duration: 688ms
+
+─── Response Headers ───
+  Content-Type: application/json; charset=utf-8
+  ...
+
+─── Response Body ───
+{
+  "userId": 1,
+  "id": 1,
+  ...
+}
+```
+
+#### **`--json`（仅 Body JSON）**
+
+```bash
+apix getPost --id 1 --json
+```
+
+**输出：**
+```json
+{"userId":1,"id":1,"title":"...","body":"..."}
+```
+
+- ✅ 紧凑的 JSON 格式（无缩进）
+- ✅ 仅输出 Body，无额外信息
+- ✅ 适合脚本处理和管道操作
+
+#### **`--full --json`（完整响应 JSON）**
+
+```bash
+apix getPost --id 1 --full --json
+```
+
+**输出：**
+```json
+{
+  "status_code": 200,
+  "status": "200 OK",
+  "duration_ms": "688.123",
+  "headers": {
+    "Content-Type": "application/json; charset=utf-8",
+    "Server": "cloudflare"
+  },
+  "body": {
+    "userId": 1,
+    "id": 1,
+    "title": "...",
+    "body": "..."
+  }
+}
+```
+
+- ✅ 完整的响应信息结构化输出
+- ✅ 包含状态码、响应时间、头信息和 Body
+- ✅ 适合程序化处理和日志记录
+
 ### 全局标志
 
 | 标志 | 简写 | 说明 |
@@ -353,8 +495,9 @@ done
 | `--profile` | `-P` | 使用环境名称，自动查找对应的规范文件 |
 | `--base-url` | - | 覆盖服务器 URL（优先级高于规范中定义的 servers） |
 | `--server` | - | 选择服务器索引（当有多个 servers 时），默认为 0 |
-| `--raw` | - | 仅输出响应体，不包含头信息或状态 |
-| `--json` | - | 以 JSON 格式输出完整响应，包括状态、头和体 |
+| `--full` | - | 显示完整响应，包括状态、头和响应体 |
+| `--raw` | - | 以美化 JSON 格式输出响应体 |
+| `--json` | - | 以 JSON 格式输出响应体（与 --full 组合输出完整响应的 JSON） |
 | `--debug` | - | 显示调试信息，包括请求 URL 和方法 |
 
 ### 操作级别标志
@@ -557,12 +700,15 @@ apix updateUser --id 42 -b data.json
 ### 4. 脚本中使用 --raw 和 --json
 
 ```bash
-# 在脚本中提取数据
+# 提取数据（美化 JSON）
 USER_ID=$(apix createUser -b user.json --raw | jq '.id')
 echo "Created user with ID: $USER_ID"
 
-# 完整的响应信息用于调试
-apix createUser -b user.json --json | jq '.status'
+# 仅输出 Body JSON（紧凑格式，适合管道处理）
+apix listUsers --json | jq '.[].name'
+
+# 完整响应信息用于调试
+apix createUser -b user.json --full --json | jq '.status_code'
 ```
 
 ### 5. 组合使用请求头
