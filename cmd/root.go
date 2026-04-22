@@ -82,14 +82,15 @@ var rootCmd = &cobra.Command{
 		if envProfile != "" {
 			specPath = findEnvProfile(envProfile)
 			if specPath == "" {
-				return fmt.Errorf(translator.TF("error.env_profile_not_found", envProfile) + "\n\n" +
-					translator.T("error.env_profile.hint"))
+				errMsg := translator.TF("error.env_profile_not_found", envProfile) + "\n\n" +
+					translator.T("error.env_profile.hint")
+				return fmt.Errorf("%s", errMsg)
 			}
 		}
 
 		// If no spec provided at this point, we can't proceed
 		if specPath == "" {
-			return fmt.Errorf(translator.T("error.no_spec") + "\n\n" +
+			errMsg := translator.T("error.no_spec") + "\n\n" +
 				translator.T("error.no_spec.hint") + "\n\n" +
 				"1. " + translator.T("error.no_spec.option1") + "\n" +
 				"   apix --spec openapi.yaml <operation>\n" +
@@ -101,7 +102,8 @@ var rootCmd = &cobra.Command{
 				"   apix --help\n" +
 				"   apix getPet --petId 123\n" +
 				"   apix -P prod listUsers\n\n" +
-				translator.T("error.no_spec.more_info"))
+				translator.T("error.no_spec.more_info")
+			return fmt.Errorf("%s", errMsg)
 		}
 
 		// Load the spec
