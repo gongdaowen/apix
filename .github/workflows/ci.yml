@@ -79,6 +79,7 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
+        shell: bash
         run: |
           echo "Building for ${{ matrix.goos }}/${{ matrix.goarch }}..."
           if [ "${{ matrix.goos }}" = "windows" ]; then
@@ -95,8 +96,9 @@ jobs:
 
       - name: Test binary execution (Windows)
         if: runner.os == 'Windows'
+        shell: bash
         run: |
-          .\apix-test.exe --help
+          ./apix-test.exe --help
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
