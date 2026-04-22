@@ -2,8 +2,8 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.25+-00ADD8.svg)](https://golang.org/)
-[![CI](https://github.com/apix-cli/apix/actions/workflows/ci.yml/badge.svg)](https://github.com/apix-cli/apix/actions/workflows/ci.yml)
-[![Release](https://github.com/apix-cli/apix/actions/workflows/release.yml/badge.svg)](https://github.com/apix-cli/apix/actions/workflows/release.yml)
+[![CI](https://github.com/gongdaowen/apix/actions/workflows/ci.yml/badge.svg)](https://github.com/gongdaowen/apix/actions/workflows/ci.yml)
+[![Release](https://github.com/gongdaowen/apix/actions/workflows/release.yml/badge.svg)](https://github.com/gongdaowen/apix/actions/workflows/release.yml)
 
 **Apix** 是一个功能强大的命令行工具，能够从 OpenAPI 3.x 规范自动生成 CLI 命令，让您无需编写任何代码即可调用任何 REST API。
 
